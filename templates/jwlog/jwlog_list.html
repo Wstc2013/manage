@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'nav_cat_bar.html' %}
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins" id="all">
+                <div class="ibox-title">
+                    <h5> 日志详细信息列表</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ibox-content">
+                    <form id="asset_form">
+                        <div id="export"></div>
+                        <table class="table table-striped table-bordered table-hover " id="editable" name="editable">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">
+                                        <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('asset_form')">
+                                    </th>
+                                    <th class="text-center"> ID </th>
+                                    <th class="text-center"> 日志名 </th>
+                                    <th class="text-center"> 日志路径 </th>
+                                    <th class="text-center"> 归属项目 </th>
+                                    <th class="text-center"> 操作 </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for jwlog in jwlogs %}
+                                <tr class="gradeX">
+                                    <td class="text-center" name="id" value="{{ jwlog.id }}" data-editable='false'>
+                                        <input name="id" value="{{ jwlog.id }}" type="checkbox" class="i-checks">
+                                    </td>
+                                    <td class="text-center"> {{ jwlog.id}} </td>
+                                    <td class="text-center"> {{ jwlog.filename|default_if_none:"" }} </td>
+                                    <td id='log_path' class="text-center"> {{ jwlog.log_path|default_if_none:"" }} </td>
+                                    <td class="text-center">{{ jwlog.project_own|default_if_none:"" }}</td>
+
+                                    <td class="text-center" data-editable='false'>
+                                        <a class="jwlog_real btn btn-xs btn-info">实时</a>
+                                        <select class="jwlog_history btn btn-xs btn-info">
+                                            <option selected="selected" value="volvo">历史</option>
+                                            <option value="500">500</option>
+                                            <option value="1000">1000</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <input type="button" id="asset_del" class="btn btn-danger btn-sm"  name="del_button" value="添加"/>
+                                <a value="{% url 'asset_edit_batch' %}" type="button" class="btn btn-sm btn-warning iframe">删除</a>
+                                <input type="button" id="asset_update" class="btn btn-info btn-sm"  name="update_button" value="修改"/>
+                            </div>
+                            {% include 'paginator.html' %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block self_footer_js %}
+<script>
+
+        $('.jwlog_real').click(function(){
+            var new_url = '{% url "monitor_list" %}?file_path=';
+            var title = 'This logs monitor ';
+            var file_path = $(this).parent().parent().find("#log_path").text();
+            layer.open({
+                        type: 2,
+                        title: title,
+                        shadeClose: true,
+                        shade: false,
+                        maxmin: true, //开启最大化最小化按钮
+                        area: ['725px', '600px'],
+                        content: new_url+file_path
+                    });
+       });
+
+        $('.jwlog_history').change(function(){
+            var new_url = '{% url "monitor_hostory_list" %}?file_path=';
+            var option_val= $(this).find("option:selected").val();
+            var title = 'This history logs monitor ';
+            var file_path =  $(this).parent().parent().find("#log_path").text();
+            layer.open({
+                            type: 2,
+                            title: title,
+                            maxmin: true,
+                            shade: false,
+                            area: ['725px', '600px'],
+                            content: new_url+file_path+'&option_val='+option_val
+                        })
+        });
+
+</script>
+
+{% endblock %}
