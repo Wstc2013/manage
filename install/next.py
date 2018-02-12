@@ -19,7 +19,7 @@ if django.get_version() != '1.6':
 
 from juser.user_api import db_add_user, get_object, User
 from install import color_print
-from jumpserver import get_mac_address
+from jumpserver.api import get_mac_address
 
 socket.setdefaulttimeout(2)
 
