@@ -25,7 +25,7 @@ from tornado.websocket import WebSocketClosedError
 
 from connect import Tty, User, Asset, PermRole, logger, get_object, gen_resource
 from connect import TtyLog, Log, Session, user_have_perm, get_group_user_perm, MyRunner, ExecLog
-
+from jwlog.jwlog_api import tty_to_html
 try:
     import simplejson as json
 except ImportError:
@@ -104,7 +104,8 @@ class EventHandler(ProcessEvent):
         self.client = client
 
     def process_IN_MODIFY(self, event):
-        self.client.write_message(json.dumps(f.readlines()))
+        for line in f.readlines():
+            self.client.write_message(json.dumps(tty_to_html(line)))
 
 
 def file_monitor(path='.', client=None):
@@ -131,6 +132,22 @@ def file_monitor(path='.', client=None):
             print "keyboard Interrupt."
             notifier.stop()
             break
+
+def file_monitor_method2(path='.', client=None):
+    p = os.stat(path)[6]
+    while True:
+        fw = open(path, 'r+')
+        fw.seek(p, 0)  # 偏移到上次结束位置
+
+        lines = fw.readlines()
+
+        if lines:
+            client.write_message(json.dumps(tty_to_html(fw.readlines()[0])))
+
+        # 获取当前位置，作为偏移值
+        p = fw.tell()
+        fw.close()
+        time.sleep(1)
 
 
 class MonitorHandler(tornado.websocket.WebSocketHandler):

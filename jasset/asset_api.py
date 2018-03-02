@@ -121,7 +121,6 @@ def asset_diff(before, after):
     for k, v in alter_dic.items():
         if v == [None, u'']:
             alter_dic.pop(k)
-
     return alter_dic
 
 

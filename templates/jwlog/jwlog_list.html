@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load mytags %}
 {% block content %}
 {% include 'nav_cat_bar.html' %}
 
@@ -32,8 +32,8 @@
                                         <input id="checkall" type="checkbox" class="i-checks" name="checkall" value="checkall" data-editable='false' onclick="check_all('asset_form')">
                                     </th>
                                     <th class="text-center"> ID </th>
-                                    <th class="text-center"> 日志名 </th>
                                     <th class="text-center"> 日志路径 </th>
+                                    <th class="text-center"> 日志名 </th>
                                     <th class="text-center"> 归属项目 </th>
                                     <th class="text-center"> 操作 </th>
                                 </tr>
@@ -44,9 +44,17 @@
                                     <td class="text-center" name="id" value="{{ jwlog.id }}" data-editable='false'>
                                         <input name="id" value="{{ jwlog.id }}" type="checkbox" class="i-checks">
                                     </td>
-                                    <td class="text-center"> {{ jwlog.id}} </td>
-                                    <td class="text-center"> {{ jwlog.filename|default_if_none:"" }} </td>
-                                    <td id='log_path' class="text-center"> {{ jwlog.log_path|default_if_none:"" }} </td>
+                                    <td id= 'log_id' class="text-center"> {{ jwlog.id}} </td>
+                                    <td id= 'log_path' class="text-center"> {{ jwlog.log_path |default_if_none:"" }} </td>
+                                    <td class="text-center">
+
+                                        <select class="form-control" name="log_file" id="log_file" required="">
+                                            <option selected="selected" name="log_file">请选择文件</option>
+                                            {% for log_file in jwlog.log_path|list_dir_file %}
+                                                <option value={{log_file}} name="log_file">{{ log_file}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
                                     <td class="text-center">{{ jwlog.project_own|default_if_none:"" }}</td>
 
                                     <td class="text-center" data-editable='false'>
@@ -80,9 +88,14 @@
 <script>
 
         $('.jwlog_real').click(function(){
-            var new_url = '{% url "monitor_list" %}?file_path=';
-            var title = 'This logs monitor ';
-            var file_path = $(this).parent().parent().find("#log_path").text();
+            var new_url = '{% url "monitor_list" %}?file_dir=';
+            var file_dir = $(this).parent().parent().find("#log_path").text();
+            var filename  = $(this).parent().parent().find("#log_file").find("option:selected").val();
+            var title = 'This history' + '&nbsp' +filename+'&nbsp'+'monitor';
+            if (filename=="请选择文件"){
+                layer.alert('没有选择文件请选择')
+                return false
+            }
             layer.open({
                         type: 2,
                         title: title,
@@ -90,22 +103,27 @@
                         shade: false,
                         maxmin: true, //开启最大化最小化按钮
                         area: ['725px', '600px'],
-                        content: new_url+file_path
+                        content: new_url+file_dir+'&jwlog_filename='+filename
                     });
        });
 
         $('.jwlog_history').change(function(){
-            var new_url = '{% url "monitor_hostory_list" %}?file_path=';
+            var new_url = '{% url "monitor_hostory_list" %}?file_dir=';
             var option_val= $(this).find("option:selected").val();
-            var title = 'This history logs monitor ';
-            var file_path =  $(this).parent().parent().find("#log_path").text();
+            var file_dir =  $(this).parent().parent().find("#log_path").text();
+            var filename  = $(this).parent().parent().find("#log_file").find("option:selected").val();
+            var title = 'This history' + '&nbsp' +filename+'&nbsp'+'monitor';
+            if (filename=="请选择文件"){
+                layer.alert('没有选择文件请选择')
+                return false
+            }
             layer.open({
                             type: 2,
                             title: title,
                             maxmin: true,
                             shade: false,
                             area: ['725px', '600px'],
-                            content: new_url+file_path+'&option_val='+option_val
+                            content: new_url+file_dir+'&option_val='+option_val+'&jwlog_filename='+filename
                         })
         });
 

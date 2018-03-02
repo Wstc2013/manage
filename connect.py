@@ -219,7 +219,6 @@ class Tty(object):
         connect_info = {'user': self.user, 'asset': self.asset, 'ip': asset_info.get('ip'),
                         'port': int(asset_info.get('port')), 'role_name': self.role.name,
                         'role_pass': role_pass, 'role_key': role_key}
-        logger.debug(connect_info)
         return connect_info
 
     def get_connection(self):
@@ -236,7 +235,6 @@ class Tty(object):
             role_key = connect_info.get('role_key')
             if role_key and os.path.isfile(role_key):
                 try:
-                    print 'ssh key auth'
                     ssh.connect(connect_info.get('ip'),
                                 port=connect_info.get('port'),
                                 username=connect_info.get('role_name'),
@@ -247,14 +245,12 @@ class Tty(object):
                 except (paramiko.ssh_exception.AuthenticationException, paramiko.ssh_exception.SSHException):
                     logger.warning(u'使用ssh key %s 失败, 尝试只使用密码' % role_key)
                     pass
-            print 'ssh password auth'
             ssh.connect(connect_info.get('ip'),
                         port=connect_info.get('port'),
                         username=connect_info.get('role_name'),
                         password=connect_info.get('role_pass'),
                         allow_agent=False,
                         look_for_keys=False)
-            print ssh
 
         except paramiko.ssh_exception.AuthenticationException, paramiko.ssh_exception.SSHException:
             raise ServerError('认证失败 Authentication Error.')
@@ -262,7 +258,6 @@ class Tty(object):
             raise ServerError('端口可能不对 Connect SSH Socket Port Error, Please Correct it.')
         else:
             self.ssh = ssh
-            print ssh
             return ssh
 
 

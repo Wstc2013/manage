@@ -10,10 +10,9 @@
       <div id="wrapper">
         <div id="chat_box" class="content">
             {%  for monitor_ret in monitor_ret_list %}
-                {{ monitor_ret }}
+                {{ monitor_ret | safe }}
                 </br>
             {%  endfor %}
-
         </div>
 
 
@@ -38,7 +37,7 @@
 
           #wrapper {
           {#    background-color: #ecf0f1;#}{#    border: #000 solid 5px;#} background: #000;
-              width: 720px;
+              width: 100%;
               box-shadow: rgba(0, 0, 0, 0.8) 2px 2px 20px;
               color: #fff;
           }
@@ -48,6 +47,7 @@
               height: 100%;
               overflow: auto;
               padding-bottom: 50px;
+
           }
 
           #footer {

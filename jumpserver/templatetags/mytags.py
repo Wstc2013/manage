@@ -3,6 +3,7 @@
 import re
 import ast
 import time
+import os
 
 from django import template
 from jperm.models import PermPush
@@ -304,3 +305,9 @@ def user_perm_asset_num(user_id):
         return len(user_perm_info.get('asset').keys())
     else:
         return 0
+
+@register.filter(name='list_dir_file')
+def list_dir_file(path):
+    all_list = os.listdir(path)
+    file_list = sorted([i for i in all_list if os.path.isfile(os.path.join(path, i))])[-10:]
+    return file_list

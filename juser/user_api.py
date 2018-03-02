@@ -142,7 +142,7 @@ def gen_ssh_key(username, password='',
         with open(private_key_file+'.pub') as pub_f:
             with open(authorized_key_file, 'w') as auth_f:
                 auth_f.write(pub_f.read())
-        os.chmod(authorized_key_file, 0600)
+        os.chmod(authorized_key_file, 0664)
         chown(authorized_key_file, username)
 
 
